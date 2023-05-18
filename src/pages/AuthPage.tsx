@@ -3,13 +3,14 @@ import { useState, useContext } from "react";
 import AuthForm from "@/components/AuthForm";
 import ProfileForm from "@/components/ProfileForm";
 import { auth } from "@/firebase";
-import { signInWithPopup, OAuthProvider, GoogleAuthProvider } from "firebase/auth";
+import {signInWithPopup, OAuthProvider, GoogleAuthProvider, UserCredential} from "firebase/auth";
 import { Context } from "@/context/authContext";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { useSnackbar } from "notistack";
 import Router from "next/router";
 import Head from "next/head";
 import api from "../components/api";
+import profileForm from "@/components/ProfileForm";
 
 const AuthPage: React.FC = () => {
     const [formMode, setFormMode] = useState<"login" | "register">("login");
@@ -28,7 +29,7 @@ const AuthPage: React.FC = () => {
     };
 
     const handlePasswordChange = (password: string | undefined) => {
-        password ? setPassword(password) : setPassword("");
+        password != undefined ? setPassword(password) : setPassword("");
     };
 
     const handleUsernameChange = (username: string) => {
@@ -41,14 +42,19 @@ const AuthPage: React.FC = () => {
 
     const handleContinue = async () => {
         try {
-            const response = await api.post('/api/auth/userExists', {
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
-            });
+            const response = await api.post('/api/auth/userExists',
+                JSON.stringify({ email: email }),
+            );
             const userExists = await response.data;
+            try {
+
+            } catch (error: any) {
+                enqueueSnackbar(error.message, { variant: "error", autoHideDuration: 1500 });
+            }
 
             if (userExists) {
-                signIn();
+                let result = await signInWithEmailAndPassword(auth, email, password);
+                signIn(result);
             } else {
                 setProfileFormVisible(true);
             }
@@ -57,15 +63,15 @@ const AuthPage: React.FC = () => {
         }
     };
 
-    const handleRegister = async (username: string, playerName: string, password: string, isAgree: boolean) => {
+    const handleRegister = async (username: string, playerName: string, password: string, isAgree: boolean = true) => {
         if (isAgree) {
             try {
-                const result = await createUserWithEmailAndPassword(auth, email, password);
-                localStorage.setItem("user", JSON.stringify(result.user));
-                await api.post('/api/auth/register', {
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, password: password, username: username, playerName: playerName }),
-                });
+                let result = await createUserWithEmailAndPassword(auth, email, password);
+                console.log(result.user.getIdToken())
+                localStorage.setItem("user", JSON.stringify(await result.user.getIdToken()));
+                await api.post('/api/auth/register-firebase',
+                    JSON.stringify({ email: email, password: password, username: username, playerName: playerName }),
+                );
                 enqueueSnackbar("Successfully registered!", { variant: "success", autoHideDuration: 1700 });
                 context.dispatch({ type: "LOGIN", payload: result.user });
                 Router.push("/secret");
@@ -87,7 +93,8 @@ const AuthPage: React.FC = () => {
             username ? setUsername(username) : setUsername("");
             setFormMode('register');
             setSignedInWithProvider(true);
-            localStorage.setItem("user", JSON.stringify(result.user));
+            localStorage.setItem("user", JSON.stringify(await result.user.getIdToken()));
+            setProfileFormVisible(true);
         } catch (error: any) {
             enqueueSnackbar(error.message, { variant: "error", autoHideDuration: 1500 });
         }
@@ -103,17 +110,10 @@ const AuthPage: React.FC = () => {
         signInWithProvider(provider, 'Apple');
     };
 
-    const signIn = async () => {
+    const signIn = async (result: UserCredential) => {
         try {
-            let result = await signInWithEmailAndPassword(auth, email, password);
-            if (!result.user) {
-                result = await createUserWithEmailAndPassword(auth, email, password);
-            }
-            localStorage.setItem("user", JSON.stringify(result.user));
-            const response = await api.post('/api/auth/userExists', {
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, password: password }),
-            });
+            localStorage.setItem("user", JSON.stringify(await result.user.getIdToken()));
+            const response = await api.post('/api/auth/signIn', JSON.stringify({ email: email, username: null, password: password }),);
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("refreshToken", response.data.refreshToken);
             context.dispatch({ type: "LOGIN", payload: result.user });
@@ -139,8 +139,8 @@ const AuthPage: React.FC = () => {
                 <ProfileForm
                     onUsernameChange={handleUsernameChange}
                     onPlayerNameChange={handlePlayerNameChange}
-                    onPasswordChange={signedInWithProvider ? handlePasswordChange : () => {}}
                     onRegister={handleRegister}
+                    password={password}
                 />
             )}
         </div>

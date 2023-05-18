@@ -9,14 +9,13 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 interface ProfileFormProps {
     onUsernameChange: (username: string) => void;
     onPlayerNameChange: (playerName: string) => void;
-    onPasswordChange: (password: string | undefined) => void;
     onRegister: (username: string, playerName: string, password: string, isAgree: boolean) => void;
+    password: string;
 }
 
-const ProfileForm: React.FC<ProfileFormProps> = ({ onUsernameChange, onPlayerNameChange, onPasswordChange, onRegister }) => {
+const ProfileForm: React.FC<ProfileFormProps> = ({ onUsernameChange, onPlayerNameChange, onRegister, password }) => {
     const [username, setUsername] = useState("");
     const [playerName, setPlayerName] = useState("");
-    const [password, setPassword] = useState("");
     const [isAgree, setIsAgree] = useState(false);
 
     const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,12 +29,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onUsernameChange, onPlayerNam
         setPlayerName(newPlayerName);
         onPlayerNameChange(newPlayerName);
     };
-
-    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newPassword = event.target.value;
-        setPassword(newPassword);
-        onPasswordChange(newPassword);
-    }
 
     const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsAgree(event.target.checked);
@@ -56,9 +49,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onUsernameChange, onPlayerNam
             </div>
             <div className={styles["player-name-container"]}>
                 <TextField className={styles["player-name"]} label="Игровой никнейм" onChange={handlePlayerNameChange} />
-            </div>
-            <div className={styles["flex-password-container"]}>
-                <TextField className={styles["password-instance"]} label="Пароль" type="password" onChange={handlePasswordChange}/>
             </div>
             <div className={styles["checkbox-container"]}>
                 <FormControlLabel

@@ -26,6 +26,7 @@
 .greeting-text-2 {
   color: #f5f5f5;
   align-self: flex-start;
+  text-align: center;
   margin-bottom: 25px;
   margin-left: 1px;
   font-size: .75rem;
@@ -34,9 +35,9 @@
 }
 
 .username-container {
-  color: #666;
-  width: 60%;
-  background-color: #0000;
+  color: #fff6;
+  width: 15%;
+  background-color: #698ef700;
   border: 1px solid #f5f5f5;
   border-radius: 11px;
   flex-direction: row;
@@ -44,9 +45,13 @@
   justify-content: center;
   align-self: center;
   align-items: center;
-  margin-bottom: 13px;
+  margin-left: 3px;
   padding-top: 1px;
+  padding-right: 7px;
+  font-size: .938rem;
+  font-weight: 200;
   display: flex;
+  text-emphasis-color: white;
 }
 
 .username {
@@ -55,9 +60,9 @@
 }
 
 .player-name-container {
-  color: #666;
-  width: 60%;
-  background-color: #0000;
+  color: #fff6;
+  width: 15%;
+  background-color: #698ef700;
   border: 1px solid #f5f5f5;
   border-radius: 11px;
   flex-direction: row;
@@ -65,14 +70,13 @@
   justify-content: center;
   align-self: center;
   align-items: center;
-  margin-bottom: 18px;
-  padding-top: 3px;
-  padding-right: 16px;
-  font-family: Manrope, Arial, ui-monospace;
+  margin-left: 3px;
+  padding-top: 1px;
+  padding-right: 7px;
   font-size: .938rem;
   font-weight: 200;
-  line-height: 40px;
   display: flex;
+  text-emphasis-color: white;
 }
 
 .player-name {
@@ -81,16 +85,17 @@
 }
 
 .flex-password-container {
-  width: 90%;
-  flex-direction: column;
-  flex-basis: 7%;
-  justify-content: space-between;
+  z-index: 1;
+  width: 15%;
+  flex-direction: row;
+  flex-basis: 100%;
+  justify-content: flex-start;
   align-self: flex-start;
-  align-items: stretch;
-  margin-bottom: 22px;
-  padding-right: 80px;
-  font-size: .875rem;
+  align-items: center;
+  padding-top: 1px;
+  padding-left: 27px;
   display: flex;
+  text-emphasis-color: white;
 }
 
 .password-instance {
