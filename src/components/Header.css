@@ -1,0 +1,21 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.header .active {
+  background-color: lightgrey;
+}
+
+.header__nav > * {
+  margin: 0 5px;
+}
+
+.header__user {
+  display: flex;
+}
+
+.header__user > * {
+  margin: 0 5px;
+}
